@@ -1,0 +1,41 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<beans xmlns = "http://www.springframework.org/schema/beans"
+       xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop = "http://www.springframework.org/schema/aop"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xsi:schemaLocation = "http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/data/mongo
+    http://www.springframework.org/schema/data/mongo/spring-mongo-2.0.xsd">
+
+    <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+
+    <mongo:mongo-client id="mongoClient" host="localhost" port="27017" />
+    <mongo:db-factory id="mongoDbFactory" dbname="bookshop" mongo-ref="mongoClient" />
+
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg ref="mongoDbFactory"/>
+    </bean>
+
+    <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+
+    <bean id="book" class="model.Book">
+        <constructor-arg index="0" value="defaultTitle" />
+        <!-- 1900 as default released year       -->
+        <constructor-arg index="1" value="1900" />
+        <constructor-arg index="2" ref="writer" />
+    </bean>
+
+    <bean id="writer" class="model.Writer">
+        <constructor-arg index="0" value="defalutName" />
+        <constructor-arg index="1" value="defalutEmail" />
+    </bean>
+
+    <bean name="loggingAspect" class="aspect.LoggingAspect" />
+    <bean name="mongoUtils" class="utility.MongoUtils">
+        <constructor-arg ref="mongoTemplate" />
+    </bean>
+
+</beans>
